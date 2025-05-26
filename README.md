@@ -16,6 +16,8 @@ A comprehensive Python client for the Enemera energy data API, providing secure 
 - **🎯 Flexible Data Access**: Generic curve access via unified client or specialized country-specific clients
 - **📦 Optional Dependencies**: Install only what you need for your specific use case
 - **🛡️ Secure by Default**: Built-in API key validation and secure HTTP session management
+- **📅 Smart Period Calculation**: Automatic delivery date and period calculation following IPEX/OMIE conventions
+- **🔄 Long Period Downloads**: Built-in chunking for downloading extended time series data
 
 ## Supported Markets
 
@@ -28,7 +30,7 @@ A comprehensive Python client for the Enemera energy data API, providing secure 
 - **Load Data**: Actual and forecast consumption by bidding zone
 - **Generation**: Actual and forecast generation by technology type
 - **Commercial Flows**: Inter-zonal power flows and capacity limits
-- **Imbalance Data**: System imbalance volumes, prices, and settlement data
+- **Imbalance Data**: System imbalance volumes, prices, and settlement data (PT15M and PT60M)
 - **DAM Demand**: Day-ahead market actual and forecasted demand
 
 ### Spain (OMIE)
@@ -144,6 +146,86 @@ df_cet = client.get_pandas_cet(
 )
 ```
 
+## Advanced Features
+
+### Delivery Period Calculation
+
+The client includes sophisticated utility functions for energy market conventions:
+
+```python
+from enemera.utils.utility_functions import calc_delivery_period
+import pandas as pd
+
+# Get price data
+df = client.get_pandas_cet(
+    curve=Curve.ITALY_PRICES,
+    market=Market.MGP,
+    area=Area.NORD,
+    date_from="2024-01-01",
+    date_to="2024-01-07"
+)
+
+# Calculate delivery date and period according to IPEX/OMIE conventions
+# Handles DST changes automatically
+df_with_periods = calc_delivery_period(df)
+
+print(df_with_periods[['delivery_date', 'period', 'price']].head())
+```
+
+**Period Calculation Rules:**
+- **60-minute resolution (PT60M)**: Periods 1-24 (25 periods on DST change days)
+- **15-minute resolution (PT15M)**: Periods 1-96 (100 periods on DST change days)
+- **DST Handling**: Automatically accounts for the last Sunday in October transitions
+- **CET-based**: All calculations use Central European Time as reference
+
+### Long Period Downloads
+
+For extended time series, use the built-in chunking utility:
+
+```python
+from enemera.utils.utility_functions import download_long_period
+from datetime import date
+
+# Download a full year of data in manageable chunks
+df_year = download_long_period(
+    client=client,
+    curve=Curve.ITALY_PRICES,
+    start_date=date(2023, 1, 1),
+    end_date=date(2023, 12, 31),
+    step_days=30,  # Download in 30-day chunks
+    market=Market.MGP,
+    area=Area.NORD
+)
+
+print(f"Downloaded {len(df_year)} data points covering {df_year.index.min()} to {df_year.index.max()}")
+```
+
+### Time Resolution Support
+
+Many endpoints now include time resolution information:
+
+```python
+# Get 15-minute imbalance data
+imbalance_15m = client.get(
+    curve=Curve.ITALY_IMBALANCE_DATA,
+    date_from="2024-01-01",
+    date_to="2024-01-07",
+    area="NORD"
+)
+
+# Get legacy 60-minute imbalance data
+imbalance_60m = client.get(
+    curve=Curve.ITALY_IMBALANCE_DATA_PT60M,
+    date_from="2024-01-01",
+    date_to="2024-01-07",
+    area="NORD"
+)
+
+# Check time resolution in the data
+df = imbalance_15m.to_pandas()
+print(df['time_resolution'].unique())  # ['PT15M']
+```
+
 ## Security Features
 
 ### JWT Token Validation
@@ -240,9 +322,18 @@ generation = italy_gen.get(
     area="NORD"
 )
 
-# Imbalance data
+# Imbalance data (15-minute resolution)
 italy_imb = ItalyImbalanceDataClient(api_key="your-key")
 imbalance = italy_imb.get(
+    date_from="2024-01-01",
+    date_to="2024-01-07",
+    area="NORD"
+)
+
+# Legacy imbalance data (60-minute resolution)
+from enemera.api import ItalyImbalanceDataPT60MClient
+italy_imb_60m = ItalyImbalanceDataPT60MClient(api_key="your-key")
+imbalance_60m = italy_imb_60m.get(
     date_from="2024-01-01",
     date_to="2024-01-07",
     area="NORD"
@@ -272,23 +363,24 @@ xbid_data = spain_xbid.get(
 
 ## Available Data Curves
 
-| Curve                         | Description                        | Parameters                    |
-|-------------------------------|------------------------------------|-------------------------------|
-| `ITALY_PRICES`                | Day-ahead and intraday prices     | market, area                  |
-| `ITALY_XBID_RESULTS`          | Cross-border intraday results     | area                          |
-| `ITALY_EXCHANGE_VOLUMES`      | Trading volumes by purpose        | market, area, purpose         |
-| `ITALY_ANCILLARY_SERVICES`    | Ancillary services market data    | market, market_segment, area  |
-| `ITALY_DAM_DEMAND_ACT`        | Actual day-ahead demand           | area                          |
-| `ITALY_DAM_DEMAND_FCS`        | Forecasted day-ahead demand       | area                          |
-| `ITALY_LOAD_ACTUAL`           | Actual electricity consumption    | area                          |
-| `ITALY_LOAD_FORECAST`         | Forecasted consumption            | area                          |
-| `ITALY_GENERATION`            | Actual generation by technology   | generation_type, area         |
-| `ITALY_GENERATION_FORECAST`   | Forecasted generation             | generation_type, area         |
-| `ITALY_COMMERCIAL_FLOWS`      | Inter-zonal power flows           | market, area_from, area_to    |
-| `ITALY_COMMERCIAL_FLOW_LIMITS`| Flow capacity limits              | market, area_from, area_to    |
-| `ITALY_IMBALANCE_DATA`        | System imbalance data             | area                          |
-| `SPAIN_PRICES`                | Day-ahead and intraday prices     | market                        |
-| `SPAIN_XBID_RESULTS`          | Cross-border intraday results     | -                             |
+| Curve                         | Description                        | Parameters                    | Time Resolution |
+|-------------------------------|------------------------------------|-------------------------------|-----------------|
+| `ITALY_PRICES`                | Day-ahead and intraday prices     | market, area                  | PT60M/PT15M     |
+| `ITALY_XBID_RESULTS`          | Cross-border intraday results     | area                          | PT60M/PT15M     |
+| `ITALY_EXCHANGE_VOLUMES`      | Trading volumes by purpose        | market, area, purpose         | PT60M/PT15M     |
+| `ITALY_ANCILLARY_SERVICES`    | Ancillary services market data    | market, market_segment, area  | PT60M/PT15M     |
+| `ITALY_DAM_DEMAND_ACT`        | Actual day-ahead demand           | area                          | PT60M/PT15M     |
+| `ITALY_DAM_DEMAND_FCS`        | Forecasted day-ahead demand       | area                          | PT60M/PT15M     |
+| `ITALY_LOAD_ACTUAL`           | Actual electricity consumption    | area                          | PT60M           |
+| `ITALY_LOAD_FORECAST`         | Forecasted consumption            | area                          | PT60M           |
+| `ITALY_GENERATION`            | Actual generation by technology   | generation_type, area         | PT60M           |
+| `ITALY_GENERATION_FORECAST`   | Forecasted generation             | generation_type, area         | PT60M           |
+| `ITALY_COMMERCIAL_FLOWS`      | Inter-zonal power flows           | market, area_from, area_to    | PT60M/PT15M     |
+| `ITALY_COMMERCIAL_FLOW_LIMITS`| Flow capacity limits              | market, area_from, area_to    | PT60M/PT15M     |
+| `ITALY_IMBALANCE_DATA`        | System imbalance data (15-min)    | area                          | PT15M           |
+| `ITALY_IMBALANCE_DATA_PT60M`  | System imbalance data (60-min)    | area                          | PT60M           |
+| `SPAIN_PRICES`                | Day-ahead and intraday prices     | market                        | PT60M/PT15M     |
+| `SPAIN_XBID_RESULTS`          | Cross-border intraday results     | -                             | PT60M/PT15M     |
 
 ## Enums Reference
 
@@ -517,22 +609,70 @@ flow_limits = client.get(
 )
 ```
 
-## Response Models
+### Working with Imbalance Data
+
+```python
+# Get current 15-minute imbalance data
+imbalance_15m = client.get(
+    curve=Curve.ITALY_IMBALANCE_DATA,
+    date_from="2024-01-01",
+    date_to="2024-01-07",
+    area="NORD"
+)
+
+# Get legacy 60-minute imbalance data
+imbalance_60m = client.get(
+    curve=Curve.ITALY_IMBALANCE_DATA_PT60M,
+    date_from="2024-01-01",
+    date_to="2024-01-07",
+    area="NORD"
+)
+
+# Convert to DataFrame and calculate delivery periods
+df_imb = imbalance_15m.to_pandas_cet()
+df_with_periods = calc_delivery_period(df_imb)
+
+print(df_with_periods[['delivery_date', 'period', 'imb_price', 'imb_volume']].head())
+```
+
+## Data Models and Response Structure
+
+### Time Resolution
+
+Many responses now include time resolution information:
+
+```python
+# Check what time resolution is available
+df = response.to_pandas()
+print(df['time_resolution'].unique())  # ['PT60M'] or ['PT15M']
+```
+
+### Enhanced Response Models
 
 The client returns structured response objects with the following key models:
 
-- **PriceData**: Electricity prices with market, zone, and price information
-- **IPEXXbidRecapResponse**: XBID trading statistics with price ranges and volumes
-- **IpexQuantityResponse**: Exchange volumes by market, zone, and purpose
-- **IPEXAncillaryServicesResponse**: Ancillary services market data
+- **PriceData**: Electricity prices with market, zone, price, and time resolution
+- **IPEXXbidRecapResponse**: XBID trading statistics with price ranges, volumes, and resolution
+- **IpexQuantityResponse**: Exchange volumes by market, zone, purpose, and resolution
+- **IPEXAncillaryServicesResponse**: Ancillary services market data with resolution
 - **GenerationData**: Generation data by area and technology type
 - **LoadData**: Load data by area
-- **ItalyImbalanceDataResponse**: Comprehensive imbalance data with prices and volumes
-- **IPEXFlowResponse**: Commercial flows between bidding zones
-- **SpainPriceResponse**: Spanish market prices
-- **SpainXbidResultsResponse**: Spanish XBID trading results
+- **ItalyImbalanceDataResponse**: Comprehensive imbalance data with prices, volumes, and finality flags
+- **IPEXFlowResponse**: Commercial flows between bidding zones with resolution
+- **SpainPriceResponse**: Spanish market prices with resolution
+- **SpainXbidResultsResponse**: Spanish XBID trading results with resolution
 
-All models inherit from `BaseTimeSeriesResponse` and include UTC timestamps.
+All models inherit from `BaseTimeSeriesResponse` or `BaseTimeSeriesWithResolutionResponse` and include UTC timestamps.
+
+### Imbalance Data Structure
+
+```python
+# Imbalance data includes comprehensive information
+imbalance_df = client.get_pandas(curve=Curve.ITALY_IMBALANCE_DATA, ...)
+print(imbalance_df.columns)
+# ['macrozone', 'imb_volume', 'imb_sign', 'imb_price', 'imb_base_price', 
+#  'pnamz', 'scambi', 'estero', 'is_final_sign', 'is_final_price', 'is_final_pnamz']
+```
 
 ## Requirements
 
@@ -545,10 +685,12 @@ All models inherit from `BaseTimeSeriesResponse` and include UTC timestamps.
 
 ### Optional Dependencies
 
-- **pandas** ≥ 1.0.0 (for DataFrame support)
+- **pandas** ≥ 1.0.0 (for DataFrame support and utility functions)
 - **polars** ≥ 0.7.0 (for Polars DataFrame support)
 - **openpyxl** ≥ 3.0.0 (for Excel export with .xlsx format)
 - **xlsxwriter** ≥ 3.0.0 (alternative Excel writer with advanced formatting)
+- **numpy** (for period calculations)
+- **pytz** (for timezone handling)
 
 ## API Documentation
 
@@ -562,6 +704,15 @@ For detailed API documentation, available endpoints, and data schemas, visit the
 2. **Security Features**: The client now validates JWT tokens by default
 3. **New Clients**: Several new specialized clients have been added for different data types
 4. **Enhanced Error Handling**: More specific exception types are now available
+5. **Time Resolution**: Many responses now include time_resolution field
+6. **Utility Functions**: New functions for period calculation and long downloads
+
+### From v0.2.0 to v0.2.1
+
+1. **Utility Functions**: Added `calc_delivery_period()` and `download_long_period()`
+2. **Time Resolution Support**: Enhanced response models with time resolution information
+3. **Imbalance Data**: New PT60M endpoint for legacy 60-minute data
+4. **Period Calculations**: Automatic handling of DST changes in European markets
 
 ## Contributing
 
@@ -608,6 +759,15 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Documentation**: [API docs](https://api.enemera.com/docs)
 
 ## Changelog
+
+### v0.2.1 - Enhanced Market Utilities & Time Resolution Support
+
+- ✅ **Smart Period Calculation**: Added `calc_delivery_period()` function with IPEX/OMIE convention support
+- ✅ **Long Period Downloads**: Added `download_long_period()` for efficient chunked data retrieval
+- ✅ **Enhanced Time Resolution**: Added time_resolution field to response models (PT60M/PT15M)
+- ✅ **Imbalance Data Improvements**: Separate endpoints for 15-minute and 60-minute historical data
+- ✅ **DST Handling**: Automatic Daylight Saving Time handling in period calculations
+- ✅ **Enhanced Response Models**: Updated models with comprehensive time resolution support
 
 ### v0.2.0 - Enhanced Security & Functionality
 

@@ -6,7 +6,7 @@ from enemera.api.italy.dam_demand import ItalyActDamDemandClient, ItalyFcsDamDem
 from enemera.api.italy.exchange_volumes import ItalyExchangeVolumesClient
 from enemera.api.italy.flows import ItalyCommercialFlowsClient, ItalyCommercialFlowLimitsClient
 from enemera.api.italy.generation import ItalyGenerationClient, ItalyGenerationForecastClient
-from enemera.api.italy.imbalance import ItalyImbalanceDataClient
+from enemera.api.italy.imbalance import ItalyImbalanceDataClient, ItalyImbalanceDataPT60MClient
 from enemera.api.italy.load import ItalyLoadActualClient, ItalyLoadForecastClient
 from enemera.api.italy.prices import ItalyPricesClient
 from enemera.api.italy.xbid import ItalyXbidResultsClient
@@ -29,6 +29,7 @@ __all__ = [
     'ItalyGenerationClient',
     'ItalyGenerationForecastClient',
     'ItalyImbalanceDataClient',
+    'ItalyImbalanceDataPT60MClient',
     'ItalyExchangeVolumesClient',
     'SpainPricesClient',
     'SpainXbidResultsClient'

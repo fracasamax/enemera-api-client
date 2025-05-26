@@ -4,13 +4,13 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "enemera"
-version = "0.2.0"
+version = "0.2.1"
 description = "API client for Enemera energy data API with enhanced functionality and enums"
 readme = "README.md"
 authors = [
-    {name = "Francesco Casamassima", email = "dev@elnc.eu"}
+    { name = "Francesco Casamassima", email = "dev@elnc.eu" }
 ]
-license = {text = "MIT"}
+license = { text = "MIT" }
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
@@ -46,7 +46,7 @@ Homepage = "https://github.com/fracasamax/enemera-api-client"
 Documentation = "https://github.com/fracasamax/enemera-api-client#readme"
 
 [tool.setuptools]
-packages = {find = {include = ["enemera", "enemera.*"], exclude = ["examples", "tests", "*.tests", "*.tests.*"]}}
+packages = { find = { include = ["enemera", "enemera.*"], exclude = ["examples", "tests", "*.tests", "*.tests.*"] } }
 
 [tool.setuptools.package-data]
 enemera = ["py.typed"]

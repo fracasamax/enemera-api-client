@@ -39,6 +39,7 @@ class Curve(Enum):
     ITALY_GENERATION = "italy_generation"  # Italian electricity generation data
     ITALY_GENERATION_FORECAST = "italy_generation_forecast"
     ITALY_IMBALANCE_DATA = "italy_imbalance_data"  # Italian imbalance data
+    ITALY_IMBALANCE_DATA_PT60M = "italy_imbalance_data_pt60m"  # Italian imbalance data with 60-minute intervals (legacy data)
     ITALY_IMBALANCE_PRICES = "italy_imbalance_prices"  # Italian imbalance prices
     ITALY_IMBALANCE_VOLUMES = "italy_imbalance_volumes"  # Italian imbalance volumes
     # Spain Day-Ahead Market and Intraday Auction Market prices

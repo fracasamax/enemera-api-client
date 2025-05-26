@@ -22,10 +22,9 @@ from enemera.api import (
     ItalyGenerationClient,
     ItalyGenerationForecastClient,
 
-    ItalyImbalanceDataClient,
-    ItalyExchangeVolumesClient,
+    ItalyImbalanceDataClient, ItalyExchangeVolumesClient,
     ItalyLoadActualClient, ItalyLoadForecastClient,
-    SpainPricesClient, SpainXbidResultsClient
+    SpainPricesClient, SpainXbidResultsClient, ItalyImbalanceDataPT60MClient
 )
 from enemera.api.base import BaseCurveClient
 from enemera.core.constants import BASE_URL
@@ -86,6 +85,7 @@ class EnemeraClient(BaseCurveClient):
         self.italy_generation = ItalyGenerationClient(api_key)
         self.italy_generation_forecast = ItalyGenerationForecastClient(api_key)
         self.italy_imbalance_data = ItalyImbalanceDataClient(api_key)
+        self.italy_imbalance_data_pt60m = ItalyImbalanceDataPT60MClient(api_key)
 
         self.spain_prices = SpainPricesClient(api_key)
         self.spain_xbid_results = SpainXbidResultsClient(api_key)
@@ -135,6 +135,7 @@ class EnemeraClient(BaseCurveClient):
             Curve.ITALY_GENERATION_FORECAST: self.italy_generation_forecast.get,
 
             Curve.ITALY_IMBALANCE_DATA: self.italy_imbalance_data.get,
+            Curve.ITALY_IMBALANCE_DATA_PT60M: self.italy_imbalance_data_pt60m.get,
 
             Curve.SPAIN_PRICES: self.spain_prices.get,
             Curve.SPAIN_XBID_RESULTS: self.spain_xbid_results.get

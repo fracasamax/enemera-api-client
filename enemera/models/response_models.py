@@ -25,7 +25,21 @@ class BaseTimeSeriesResponse(BaseModel):
     utc: datetime = Field(..., description="UTC timestamp")
 
 
-class PriceData(BaseTimeSeriesResponse):
+class BaseTimeSeriesWithResolutionResponse(BaseModel):
+    """Base model for all time series responses.
+
+    All response models inherit from this base class, which provides
+    the common UTC timestamp field present in all API responses.
+
+    Attributes:
+        utc: The UTC timestamp for the data point
+    """
+    utc: datetime = Field(..., description="UTC timestamp")
+    # time_resolution: str = Field(..., description="Time resolution (PT60M, PT15M)")
+    time_resolution: Optional[str] = Field(None, description="Time resolution (PT60M, PT15M)")
+
+
+class PriceData(BaseTimeSeriesWithResolutionResponse):
     """Model for electricity price data.
 
     This model represents price data from electricity markets,
@@ -41,7 +55,7 @@ class PriceData(BaseTimeSeriesResponse):
     price: float = Field(..., description="Price in EUR/MWh")
 
 
-class IPEXXbidRecapResponse(BaseTimeSeriesResponse):
+class IPEXXbidRecapResponse(BaseTimeSeriesWithResolutionResponse):
     """Model for Italian Power Exchange (IPEX) cross-border intraday market (XBID) recap data.
 
     This model represents summary statistics for the continuous intraday market,
@@ -60,8 +74,6 @@ class IPEXXbidRecapResponse(BaseTimeSeriesResponse):
         sell_volume: The sell volume in MWh
     """
     zone: str = Field(..., description="Zone identifier")
-    time_resolution: str = Field(...,
-                                 description="Time resolution (e.g., PT60M, PT15M)")
     first_price: Optional[float] = Field(...,
                                          description="First price in EUR/MWh")
     last_price: Optional[float] = Field(...,
@@ -78,7 +90,7 @@ class IPEXXbidRecapResponse(BaseTimeSeriesResponse):
     sell_volume: Optional[float] = Field(..., description="Sell volume in MWh")
 
 
-class IpexQuantityResponse(BaseTimeSeriesResponse):
+class IpexQuantityResponse(BaseTimeSeriesWithResolutionResponse):
     """Model for IPEX quantity data.
     This model represents the quantity of electricity traded in the IPEX markets.
     Attributes:
@@ -93,7 +105,7 @@ class IpexQuantityResponse(BaseTimeSeriesResponse):
     quantity: float = Field(..., description="Quantity in MWh")
 
 
-class IPEXAncillaryServicesResponse(BaseTimeSeriesResponse):
+class IPEXAncillaryServicesResponse(BaseTimeSeriesWithResolutionResponse):
     """Model for IPEX ancillary services data.
     This model represents the ancillary services market data in IPEX,
     including buy and sell volumes, prices, and market segments.
@@ -131,7 +143,7 @@ class IPEXAncillaryServicesResponse(BaseTimeSeriesResponse):
         None, description="Minimum buy price in EUR/MWh")
 
 
-class IPEXFlowResponse(BaseTimeSeriesResponse):
+class IPEXFlowResponse(BaseTimeSeriesWithResolutionResponse):
     """Model for IPEX flow data.
     This model represents the commercial flow of electricity between zones in the IPEX markets.
     Attributes:
@@ -148,7 +160,7 @@ class IPEXFlowResponse(BaseTimeSeriesResponse):
     flow: float = Field(..., description="Flow value in MW")
 
 
-class IPEXFlowLimitResponse(BaseTimeSeriesResponse):
+class IPEXFlowLimitResponse(BaseTimeSeriesWithResolutionResponse):
     """Model for IPEX flow limit data.
     This model represents the flow limits between zones in the IPEX markets.
     Attributes:
@@ -167,7 +179,7 @@ class IPEXFlowLimitResponse(BaseTimeSeriesResponse):
     coefficient: float = Field(..., description="Coefficient value")
 
 
-class IPEXEstimatedDemandResponse(BaseTimeSeriesResponse):
+class IPEXEstimatedDemandResponse(BaseTimeSeriesWithResolutionResponse):
     """Model for IPEX estimated demand data.
     This model represents the estimated demand for electricity in IPEX markets.
     Attributes:
@@ -179,7 +191,7 @@ class IPEXEstimatedDemandResponse(BaseTimeSeriesResponse):
     demand: float = Field(..., description="Estimated demand value in MW")
 
 
-class IPEXActualDemandResponse(BaseTimeSeriesResponse):
+class IPEXActualDemandResponse(BaseTimeSeriesWithResolutionResponse):
     """Model for IPEX actual demand data.
     This model represents the actual demand for electricity in IPEX markets.
     Attributes:
@@ -332,7 +344,7 @@ class LoadData(BaseTimeSeriesResponse):
     data_value: Optional[float] = Field(None, description="Load value in MW")
 
 
-class SpainPriceResponse(BaseTimeSeriesResponse):
+class SpainPriceResponse(BaseTimeSeriesWithResolutionResponse):
     """Model for Spain price data.
     This model represents the price data for the Spanish electricity market.
     Attributes:
@@ -347,7 +359,7 @@ class SpainPriceResponse(BaseTimeSeriesResponse):
     price: float = Field(..., description="Price value in EUR/MWh")
 
 
-class SpainXbidResultsResponse(BaseTimeSeriesResponse):
+class SpainXbidResultsResponse(BaseTimeSeriesWithResolutionResponse):
     """Model for Spain XBID results data.
     This model represents the results of the cross-border intraday market (XBID) in Spain.
     Attributes:

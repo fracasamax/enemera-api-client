@@ -2,7 +2,7 @@
 Enemera API Client - A Python client for the Enemera energy data API.
 """
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 
 # Import exceptions first as they don't have dependencies
 from enemera.core.exceptions import (
@@ -17,6 +17,7 @@ from enemera.core.exceptions import (
 from enemera.models.curves import Curve
 # Import common enums and models that don't have dependencies
 from enemera.models.enums import Market, Area, Purpose
+from enemera.utils.utility_functions import calc_delivery_period, download_long_period
 
 # Import response module with optional dependencies
 try:
@@ -41,5 +42,7 @@ __all__ = [
     "Area",
     "Purpose",
     "APIResponse",
-    "Curve"
+    "Curve",
+    "calc_delivery_period",
+    "download_long_period"
 ]

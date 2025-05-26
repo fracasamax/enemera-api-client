@@ -1,20 +1,40 @@
 """
 Validation functions for the Enemera API client.
+
+This module provides utility functions for validating input parameters
+and enforcing type safety throughout the API client. It includes support
+for validating enum values, date formats, and file paths.
 """
 import enum
 import pathlib
 from typing import Union, TypeVar, Type
 
-from .enums import Market, Area, Purpose
-from .exceptions import ValidationError
+from enemera.enums import Market, Area, Purpose
+from enemera.exceptions import ValidationError
 
+# Type variable for enum validation
 T = TypeVar('T', bound=enum.Enum)
 
 
 class MarketValidationError(ValidationError):
-    """Exception raised when a market identifier is invalid."""
+    """Exception raised when a market identifier is invalid.
+
+    This exception is raised when an invalid market identifier is provided to
+    functions that expect a valid Market enum value or string representation.
+
+    Attributes:
+        value: The invalid market value that was provided
+        supported_markets: List of valid market identifiers
+    """
 
     def __init__(self, value, supported_markets=None):
+        """Initialize a new MarketValidationError.
+
+        Args:
+            value: The invalid value that was provided
+            supported_markets: Optional list of valid market identifiers.
+                If not provided, all values from the Market enum are used.
+        """
         self.value = value
         self.supported_markets = supported_markets or [m.value for m in Market]
         message = f"Invalid market identifier: '{value}'. Supported markets are: {', '.join(self.supported_markets)}"
@@ -22,9 +42,24 @@ class MarketValidationError(ValidationError):
 
 
 class AreaValidationError(ValidationError):
-    """Exception raised when an area identifier is invalid."""
+    """Exception raised when an area identifier is invalid.
+
+    This exception is raised when an invalid area identifier is provided to
+    functions that expect a valid Area enum value or string representation.
+
+    Attributes:
+        value: The invalid area value that was provided
+        supported_areas: List of valid area identifiers
+    """
 
     def __init__(self, value, supported_areas=None):
+        """Initialize a new AreaValidationError.
+
+        Args:
+            value: The invalid value that was provided
+            supported_areas: Optional list of valid area identifiers.
+                If not provided, all values from the Area enum are used.
+        """
         self.value = value
         self.supported_areas = supported_areas or [a.value for a in Area]
         message = f"Invalid area identifier: '{value}'. Supported areas are: {', '.join(self.supported_areas)}"
@@ -193,7 +228,8 @@ def validate_and_transform_areas(area: Union[str, Area, list[str], list[Area], N
             # Handle single area or comma-separated list
             if ',' in area:
                 area_parts = str(area).split(',')
-                validated_areas = [validate_area(a.strip()) for a in area_parts]
+                validated_areas = [validate_area(
+                    a.strip()) for a in area_parts]
             else:
                 validated_areas = [validate_area(area)]
         elif isinstance(area, Area):

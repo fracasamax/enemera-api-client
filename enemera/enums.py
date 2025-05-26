@@ -1,31 +1,43 @@
 """
 Enums for the Enemera API client.
+
+This module defines enumerations used throughout the client library for
+representing market types, areas, and other categorical data in a type-safe way.
 """
 
 from enum import Enum
 
 
 class Purpose(Enum):
-    """Enum for the purpose of exchange volumes."""
-    SELL = "SELL"  # Sell purpose
-    BUY = "BUY"  # Buy purpose
+    """Enum for exchange volume purpose.
+
+    Used to distinguish between buy and sell purposes in exchange volume data.
+    """
+    SELL = "SELL"  # Sell purpose in the market
+    BUY = "BUY"  # Buy purpose in the market
 
     def __str__(self):
+        """Return the string representation of the enum value."""
         return self.value
 
 
 class Market(Enum):
-    """Enum for Italian energy market identifiers."""
-    MGP = "MGP"  # Day-Ahead Market
-    MI1 = "MI1"  # Intraday Market 1
-    MI2 = "MI2"  # Intraday Market 2
-    MI3 = "MI3"  # Intraday Market 3
-    MI4 = "MI4"  # Intraday Market 4
-    MI5 = "MI5"  # Intraday Market 5
-    MI6 = "MI6"  # Intraday Market 6
-    MI7 = "MI7"  # Intraday Market 7
-    MSD = "MSD"  # Ancillary Services Market
-    MB = "MB"    # Balancing Market
+    """Enum for Italian energy market identifiers.
+
+    Represents the different electricity markets in Italy's power exchange system
+    including day-ahead, intraday, and ancillary services markets.
+    """
+    MGP = "MGP"  # Day-Ahead Market (Mercato del Giorno Prima)
+    MI1 = "MI1"  # Intraday Market 1 (Mercato Infragiornaliero 1)
+    MI2 = "MI2"  # Intraday Market 2 (Mercato Infragiornaliero 2)
+    MI3 = "MI3"  # Intraday Market 3 (Mercato Infragiornaliero 3)
+    MI4 = "MI4"  # Intraday Market 4 (Mercato Infragiornaliero 4)
+    MI5 = "MI5"  # Intraday Market 5 (Mercato Infragiornaliero 5)
+    MI6 = "MI6"  # Intraday Market 6 (Mercato Infragiornaliero 6)
+    MI7 = "MI7"  # Intraday Market 7 (Mercato Infragiornaliero 7)
+    # Ancillary Services Market (Mercato per il Servizio di Dispacciamento)
+    MSD = "MSD"
+    MB = "MB"  # Balancing Market (Mercato del Bilanciamento)
     MBa = "MBa"  # Balancing Market - altri servizi (other services)
     MBs = "MBs"  # Balancing Market - secondary reserve
 
@@ -34,19 +46,24 @@ class Market(Enum):
 
 
 class Area(Enum):
-    """Enum for Italian bidding zones and macrozones."""
-    # Standard bidding zones
-    NORD = "NORD"  # North
-    CNOR = "CNOR"  # Center-North
-    CSUD = "CSUD"  # Center-South
-    SUD = "SUD"  # South
-    SICI = "SICI"  # Sicily
-    SARD = "SARD"  # Sardinia
-    CALA = "CALA"  # Calabria
+    """Enum for Italian bidding zones and macrozones.
 
-    # Macro zones
+    Represents the geographical bidding zones in the Italian electricity market
+    as well as macrozones used for imbalance pricing and other calculations.
+    """
+    # Standard bidding zones
+    NORD = "NORD"  # North zone (Northern Italy)
+    CNOR = "CNOR"  # Center-North zone (Central-Northern Italy)
+    CSUD = "CSUD"  # Center-South zone (Central-Southern Italy)
+    SUD = "SUD"  # South zone (Southern Italy)
+    SICI = "SICI"  # Sicily zone
+    SARD = "SARD"  # Sardinia zone
+    CALA = "CALA"  # Calabria zone
+
+    # Macro zones (used for imbalance pricing)
     NORTH = "NORD"  # North macrozone (alias for NORD)
-    SOUTH = "SUD"  # South macrozone
+    # South macrozone (includes SUD, CSUD, CNOR, SICI, SARD, CALA)
+    SOUTH = "SUD"
 
     # Virtual zones
     BRNN = "BRNN"  # Brindisi
@@ -68,6 +85,3 @@ class Area(Enum):
 
     def __str__(self):
         return self.value
-
-
-

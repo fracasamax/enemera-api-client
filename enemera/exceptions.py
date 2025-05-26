@@ -1,27 +1,62 @@
 """
 Custom exceptions for the Enemera API client.
+
+This module defines a hierarchy of exception classes used throughout the Enemera API client.
+All exceptions inherit from the base EnemeraError class, providing consistent
+error handling and reporting.
 """
 from typing import Optional, Dict, Any, Union
 
 
 class EnemeraError(Exception):
-    """Base exception for all Enemera API client errors."""
+    """Base exception for all Enemera API client errors.
+
+    All exceptions in this library inherit from this base class,
+    allowing for consistent error handling throughout the codebase.
+
+    Attributes:
+        message: Human-readable error message
+        extra_data: Dictionary of additional error context
+    """
 
     def __init__(self, message: str, **kwargs):
+        """Initialize a new EnemeraError.
+
+        Args:
+            message: Human-readable error message
+            **kwargs: Additional error context passed as keyword arguments
+        """
         self.message = message
         self.extra_data = kwargs
         super().__init__(message)
 
 
 class AuthenticationError(EnemeraError):
-    """Raised when authentication with the API fails."""
+    """Raised when authentication with the API fails.
+
+    This exception is raised when the API rejects the provided API key
+    or other authentication credentials.
+    """
 
     def __init__(self, message: str = "Authentication failed. Check your API key.", **kwargs):
+        """Initialize a new AuthenticationError.
+
+        Args:
+            message: Human-readable error message
+            **kwargs: Additional error context passed as keyword arguments
+        """
         super().__init__(message, **kwargs)
 
 
 class RateLimitError(EnemeraError):
-    """Raised when the API rate limit is exceeded."""
+    """Raised when the API rate limit is exceeded.
+
+    This exception is raised when too many requests are made to the API
+    in a short period of time, exceeding the rate limits.
+
+    Attributes:
+        retry_after: The number of seconds to wait before retrying
+    """
 
     def __init__(
         self,
@@ -29,12 +64,29 @@ class RateLimitError(EnemeraError):
         retry_after: Optional[int] = None,
         **kwargs
     ):
+        """Initialize a new RateLimitError.
+
+        Args:
+            message: Human-readable error message
+            retry_after: The number of seconds to wait before retrying
+            **kwargs: Additional error context passed as keyword arguments
+        """
         self.retry_after = retry_after
         super().__init__(message, retry_after=retry_after, **kwargs)
 
 
 class APIError(EnemeraError):
-    """Raised when the API returns an error response."""
+    """Raised when the API returns an error response.
+
+    This exception is raised when the API returns an HTTP error status code,
+    providing details about the specific error that occurred.
+
+    Attributes:
+        status_code: The HTTP status code returned by the API
+        detail: Details about the error from the API
+        response_body: The complete response body from the API
+        request_id: The unique identifier for the request (if available)
+    """
 
     def __init__(
         self,
@@ -44,6 +96,15 @@ class APIError(EnemeraError):
         request_id: Optional[str] = None,
         **kwargs
     ):
+        """Initialize a new APIError.
+
+        Args:
+            status_code: The HTTP status code returned by the API
+            detail: Details about the error from the API
+            response_body: The complete response body from the API
+            request_id: The unique identifier for the request (if available)
+            **kwargs: Additional error context passed as keyword arguments
+        """
         self.status_code = status_code
         self.detail = detail
         self.response_body = response_body

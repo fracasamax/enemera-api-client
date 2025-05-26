@@ -1,3 +1,11 @@
+"""
+Response handling for the Enemera API.
+
+This module provides the APIResponse class, which extends the built-in list 
+to provide additional functionality for converting API responses to various
+data formats (pandas DataFrames, polars DataFrames, CSV, Excel, etc.)
+"""
+
 import pathlib
 from typing import Union, List, TypeVar
 
@@ -82,7 +90,8 @@ class APIResponse(List[T]):
         try:
             import polars as pl
         except ImportError:
-            raise ImportError("polars is required. Install with: pip install polars")
+            raise ImportError(
+                "polars is required. Install with: pip install polars")
 
         if not self._data:
             return pl.DataFrame()
@@ -102,7 +111,8 @@ class APIResponse(List[T]):
         try:
             import openpyxl
         except ImportError:
-            raise ImportError("openpyxl is required for Excel export. Install with: pip install openpyxl")
+            raise ImportError(
+                "openpyxl is required for Excel export. Install with: pip install openpyxl")
 
         import warnings
         warnings.warn(

@@ -6,8 +6,8 @@ from typing import Dict, Any, Optional, Union, Type, TYPE_CHECKING, TypeVar
 import pandas as pd
 import requests
 
-from enemera.exceptions import ConfigurationError
-from enemera.response import APIResponse
+from enemera.core.exceptions import ConfigurationError
+from enemera.core.response import APIResponse
 from enemera.security import validate_api_key, SecureSession, SecureConfig
 from enemera.utils.logging import logger
 

@@ -28,9 +28,9 @@ from enemera.api import (
     SpainPricesClient, SpainXbidResultsClient
 )
 from enemera.api.base import BaseCurveClient
-from enemera.constants import BASE_URL
-from enemera.curves import Curve
-from enemera.response import APIResponse
+from enemera.core.constants import BASE_URL
+from enemera.core.response import APIResponse
+from enemera.models.curves import Curve
 
 
 class EnemeraClient(BaseCurveClient):

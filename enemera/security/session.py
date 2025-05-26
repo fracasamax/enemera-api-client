@@ -5,7 +5,7 @@ import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
-from enemera.exceptions import AuthenticationError, RateLimitError, APIError
+from enemera.core.exceptions import AuthenticationError, RateLimitError, APIError
 from enemera.security.validators import validate_api_key
 
 

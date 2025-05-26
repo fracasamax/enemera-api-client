@@ -11,8 +11,8 @@ from typing import Union, List, TypeVar
 
 import pandas as pd
 
-from enemera.response_models import BaseTimeSeriesResponse
-from enemera.validators import validate_filepath
+from enemera.models.response_models import BaseTimeSeriesResponse
+from enemera.validators.validators import validate_filepath
 
 T = TypeVar('T', bound=BaseTimeSeriesResponse)
 

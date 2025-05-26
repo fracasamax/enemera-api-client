@@ -4,13 +4,8 @@ Enemera API Client - A Python client for the Enemera energy data API.
 
 __version__ = "0.2.0"
 
-from enemera.curves import Curve
-
-# Import common enums and models that don't have dependencies
-from enemera.enums import Market, Area, Purpose
-
 # Import exceptions first as they don't have dependencies
-from enemera.exceptions import (
+from enemera.core.exceptions import (
     EnemeraError,
     AuthenticationError,
     RateLimitError,
@@ -19,15 +14,13 @@ from enemera.exceptions import (
     ConnectionError,
     DependencyError
 )
-
-from enemera.validators import (
-    MarketValidationError,
-    AreaValidationError
-)
+from enemera.models.curves import Curve
+# Import common enums and models that don't have dependencies
+from enemera.models.enums import Market, Area, Purpose
 
 # Import response module with optional dependencies
 try:
-    from enemera.response import APIResponse
+    from enemera.core.response import APIResponse
     # from enemera.data_utils import to_pandas, to_polars, to_csv, to_excel, convert_timezone, to_cet
 except ImportError as e:
     # Provide a helpful message if dependencies are missing
@@ -44,14 +37,6 @@ from enemera.client import EnemeraClient
 
 __all__ = [
     "EnemeraClient",
-    "EnemeraError",
-    "AuthenticationError",
-    "RateLimitError",
-    "APIError",
-    "ValidationError",
-    "ConnectionError",
-    "MarketValidationError",
-    "AreaValidationError",
     "Market",
     "Area",
     "Purpose",

@@ -9,8 +9,8 @@ import enum
 import pathlib
 from typing import Union, TypeVar, Type
 
-from enemera.enums import Market, Area, Purpose
-from enemera.exceptions import ValidationError
+from enemera.core.exceptions import ValidationError
+from enemera.models.enums import Market, Area, Purpose
 
 # Type variable for enum validation
 T = TypeVar('T', bound=enum.Enum)

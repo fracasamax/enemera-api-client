@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 from typing import Dict, Any
 
-from enemera.exceptions import ConfigurationError
+from enemera.core.exceptions import ConfigurationError
 from enemera.security.validators import validate_api_key
 
 

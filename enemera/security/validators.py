@@ -10,7 +10,7 @@ import re
 from datetime import datetime, timezone
 from typing import Optional, Dict, Any
 
-from enemera.exceptions import AuthenticationError, ConfigurationError
+from enemera.core.exceptions import AuthenticationError, ConfigurationError
 
 
 class APIKeyValidator:

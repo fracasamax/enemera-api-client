@@ -4,7 +4,7 @@ Logging utilities for the Enemera API client.
 
 import logging
 import sys
-from typing import Optional, Union, Dict, Any
+from typing import Optional
 
 
 class EnemeraLogger:
@@ -103,9 +103,9 @@ logger = EnemeraLogger()
 
 
 def configure_logging(
-    level: Optional[str] = None,
-    handler: Optional[logging.Handler] = None,
-    formatter: Optional[logging.Formatter] = None
+        level: Optional[str] = None,
+        handler: Optional[logging.Handler] = None,
+        formatter: Optional[logging.Formatter] = None
 ) -> None:
     """
     Configure the global Enemera logger.

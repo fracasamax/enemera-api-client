@@ -2,9 +2,9 @@ from datetime import datetime, date
 from typing import Union, Optional
 
 from enemera.api.base import BaseCurveClient
-from enemera.constants import BASE_URL
-from enemera.response import APIResponse
-from enemera.response_models import IPEXXbidRecapResponse
+from enemera.core.constants import BASE_URL
+from enemera.core.response import APIResponse
+from enemera.models.response_models import IPEXXbidRecapResponse
 
 
 class ItalyXbidResultsClient(BaseCurveClient):
